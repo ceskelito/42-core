@@ -6,13 +6,43 @@
 /*   By: rceschel <rceschel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:51:34 by rceschel          #+#    #+#             */
-/*   Updated: 2025/01/09 15:02:40 by rceschel         ###   ########.fr       */
+/*   Updated: 2025/01/11 18:52:59 by rceschel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_substrchr(const char *s, int chr)
+
+char	*ft_strchr(const char *s, int chr)
+{
+	char	c;
+	int		i;
+
+	i = 0;
+	c = (char)chr;
+	while (s[i])
+	{
+		if (s[i] == c)
+			return ((char *)s + i);
+		i++;
+	}
+	if (c == '\0')
+		return ((char *)s + i);
+	return (NULL);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*str;
+
+	str = (char *)malloc(ft_strlen(s) + 1);
+	if(!str)
+		return (NULL);
+	ft_strlcpy(str, (char *)s, ft_strlen(s) + 1);
+	return (str);
+}
+
+char	*ft_strchrdup(const char *s, int chr)
 {
 	char	c;
 	int		i;
@@ -26,7 +56,7 @@ char	*ft_substrchr(const char *s, int chr)
 		i++;
 	}
 	if (c == '\0')
-		return ((char *)s + i);
+		return (ft_strdup(s + i));
 	return (NULL);
 }
 
@@ -42,14 +72,6 @@ int	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strdup(const char *s)
-{
-	char	*str;
-
-	str = (char *)malloc(ft_strlen(s) + 1);
-	ft_strlcpy(str, (char *)s, ft_strlen(s) + 1);
-	return (str);
-}
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {
