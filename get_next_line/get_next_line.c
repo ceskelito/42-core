@@ -6,7 +6,7 @@
 /*   By: rceschel <rceschel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:47:26 by rceschel          #+#    #+#             */
-/*   Updated: 2025/01/14 15:42:45 by rceschel         ###   ########.fr       */
+/*   Updated: 2025/01/15 14:55:32 by rceschel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,40 +18,43 @@ char	*get_next_line(fd)
 	char			*line;
 	int				r;
 
-	r = BUFFER_SIZE;
+
 	ft_init_line(&line, &buff);
+	line = ft_append_buff(&line, buff);
 	if (!line || fd < 0 || fd > FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
+	r = BUFFER_SIZE;
 	while (1)
 	{
 		if (ft_strchr(line, '\n') || r < BUFFER_SIZE)
 			return (line);
 		r = read(fd, buff, BUFFER_SIZE);
-		if (r < 0)
+		if (r <= 0)
 			return (NULL);
 		buff[r] = '\0';
 		line = ft_append_buff(&line, buff);
 	}
 }
 
-void	ft_init_line(char **line, t_buffer *start)
+void	ft_init_line(char **line, t_buffer *buff)
 {
-	int	i;
-
+	int		i;
+	char	*tmp;
+	
 	*line = malloc(sizeof(t_buffer));
 	if (!(*line))
 		return;
 	(*line)[0] = '\0';
-	ft_strlcpy(*line, *start, BUFFER_SIZE);
+	ft_strlcpy(*line, *buff, BUFFER_SIZE);
 	i = 0;
 	while(i < BUFFER_SIZE)	
-		*start[i++] = '\0';
-	*line = ft_append_buff(line, *start);
+		buff[0][i++] = '\0';
 }
 
 char	*ft_append_buff(char **line, t_buffer buff)
 {
 	char	*new_line;
+	//char	*tmp;
 	int		i;
 
 	new_line = ft_strjoin(*line, buff);
@@ -66,34 +69,4 @@ char	*ft_append_buff(char **line, t_buffer buff)
 	}
 	free(*line);
 	return (new_line);
-}
-
-int	main(void)
-{
-	int fd = open("file.txt", O_RDONLY);
-	char *str;
-
-	int i = 0;
- 
-	str = get_next_line(fd);
-	/*printf("%s", str);
-	free(str);
-	str = get_next_line(fd);
-	printf("%s", str);
-	free(str); 
-	str = get_next_line(fd);
-	printf("%s", str);
-	free(str);  */
-/* 	while(str)
-	{
-		
-		printf("%s", str);
-		free(str);
-		str = get_next_line(fd);
-		i++;
-		
-	} */
-
-
-	close(fd);
 }

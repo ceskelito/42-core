@@ -6,7 +6,7 @@
 /*   By: rceschel <rceschel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:51:34 by rceschel          #+#    #+#             */
-/*   Updated: 2025/01/14 13:45:08 by rceschel         ###   ########.fr       */
+/*   Updated: 2025/01/15 14:53:36 by rceschel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	len2;
 
 	if (!s1 && !s2)
-		return (malloc(sizeof(char)));
+		return ("");
+		//return (malloc(sizeof(char)));
 	if (!s1)
 		return (ft_strdup(s2));
 	else if (!s2)
