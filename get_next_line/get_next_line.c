@@ -5,91 +5,95 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rceschel <rceschel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/10 12:09:15 by rceschel          #+#    #+#             */
-/*   Updated: 2025/01/11 19:35:43 by rceschel         ###   ########.fr       */
+/*   Created: 2025/01/13 13:47:26 by rceschel          #+#    #+#             */
+/*   Updated: 2025/01/14 15:42:45 by rceschel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char *get_next_line(int fd)
+char	*get_next_line(fd)
 {
-	static buffer_t		start;
-	buffer_t			buff;
-	char				*line;
-	int 				r;
+	static t_buffer	buff;
+	char			*line;
+	int				r;
 
-	if(start[BUFFER_SIZE + 1] == LAST_CALL)
+	r = BUFFER_SIZE;
+	ft_init_line(&line, &buff);
+	if (!line || fd < 0 || fd > FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
-	if(!ft_init_line(&line, start, fd))
-		return (NULL);
-	while(1)
+	while (1)
 	{
+		if (ft_strchr(line, '\n') || r < BUFFER_SIZE)
+			return (line);
 		r = read(fd, buff, BUFFER_SIZE);
-		if(r < 0)
+		if (r < 0)
 			return (NULL);
 		buff[r] = '\0';
-		if(r < BUFFER_SIZE || ft_strchr(buff, '\n'))
-			break;
-		line = ft_append_buff(line, buff, NULL);
+		line = ft_append_buff(&line, buff);
 	}
-	if(r < BUFFER_SIZE)
-		start[BUFFER_SIZE + 1] = LAST_CALL;
-	return(ft_append_buff(line, buff, &start));
 }
 
-bool	ft_init_line(char **line, buffer_t start, int fd)
+void	ft_init_line(char **line, t_buffer *start)
 {
-	if (fd < 0 || fd > FOPEN_MAX || BUFFER_SIZE <= 0)
-		return (false);
-	(*line) = malloc(sizeof(buffer_t));
-	(*line)[BUFFER_SIZE] = '\0';
-	if(!(*line))
-		return (false);
-	ft_strlcpy(*line, start, BUFFER_SIZE);
-	return (true);
+	int	i;
+
+	*line = malloc(sizeof(t_buffer));
+	if (!(*line))
+		return;
+	(*line)[0] = '\0';
+	ft_strlcpy(*line, *start, BUFFER_SIZE);
+	i = 0;
+	while(i < BUFFER_SIZE)	
+		*start[i++] = '\0';
+	*line = ft_append_buff(line, *start);
 }
 
-char	*ft_append_buff(char *line, buffer_t buff, buffer_t *start)
-
+char	*ft_append_buff(char **line, t_buffer buff)
 {
-	int		size;
-	char	*p;
-	char	*line_temp;
+	char	*new_line;
+	int		i;
 
-	size = ft_strlen(line);
-	line_temp = malloc((size + BUFFER_SIZE + 1) * sizeof(char));
-	ft_strlcpy(line_temp, line, size + BUFFER_SIZE + 1);
-	if (!line_temp)
-		return (NULL);
-	ft_strlcpy(line_temp + size, buff, BUFFER_SIZE + 1);
-	p = ft_strchrdup(line_temp, '\n');
-	if (p)
+	new_line = ft_strjoin(*line, buff);
+	if(ft_strchr(new_line, '\n'))
 	{
-		ft_strlcpy(*start, p + 1, BUFFER_SIZE);
-		size = 0;
-		while (line_temp[size])
-			if (line_temp[size++] == '\n')
-				line_temp[size] = '\0';
-		free(p);
-		p = NULL;
+		i = 0;
+		while(new_line[i] != '\n')
+			i++;
+		i++;
+		ft_strlcpy(buff, new_line + i, BUFFER_SIZE);
+		new_line[i] = '\0';		
 	}
-	free(line);
-	line = NULL;
-	return (line_temp);
+	free(*line);
+	return (new_line);
 }
 
-/* int	main(void)
+int	main(void)
 {
 	int fd = open("file.txt", O_RDONLY);
 	char *str;
 
-	while(str)
+	int i = 0;
+ 
+	str = get_next_line(fd);
+	/*printf("%s", str);
+	free(str);
+	str = get_next_line(fd);
+	printf("%s", str);
+	free(str); 
+	str = get_next_line(fd);
+	printf("%s", str);
+	free(str);  */
+/* 	while(str)
 	{
-		str = get_next_line(fd);
+		
 		printf("%s", str);
 		free(str);
-	}
-	
+		str = get_next_line(fd);
+		i++;
+		
+	} */
+
+
 	close(fd);
-} */
+}
