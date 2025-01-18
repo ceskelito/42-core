@@ -1,36 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rceschel <rceschel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:47:26 by rceschel          #+#    #+#             */
-/*   Updated: 2025/01/18 20:19:48 by rceschel         ###   ########.fr       */
+/*   Updated: 2025/01/18 20:19:45 by rceschel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*get_next_line(int fd)
 {
-	static t_buffer	buff;
+	static t_buffer	buff[1024 + 1];
 	char			*line;
 	int				r;
 
-	ft_init_line(&line, buff);
+	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
+		return (NULL);
+	ft_init_line(&line, buff[fd]);
 	r = BUFFER_SIZE;
 	while (1)
 	{
-		if (!line || fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
+		if(!line)
 			break;
 		if (ft_strchr(line, '\n') || r < BUFFER_SIZE)
 			return (line);
-		r = read(fd, buff, BUFFER_SIZE);
+		r = read(fd, buff[fd], BUFFER_SIZE);
 		if (r <= 0 && !line[0])
 			break;
-		buff[r] = '\0';
-		line = ft_append_buff(line, buff);
+		buff[fd][r] = '\0';
+		line = ft_append_buff(line, buff[fd]);
 	}
 	if (line)
 		free(line);
