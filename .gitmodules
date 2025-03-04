@@ -7,3 +7,6 @@
 [submodule "ft_printf"]
 	path = ft_printf
 	url = https://github.com/ceskelito/ft_printf.git
+[submodule "minitalk"]
+	path = minitalk
+	url = git@github.com:ceskelito/minitalk.git
